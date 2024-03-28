@@ -6,6 +6,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix, zero_one_loss
 from sklearn.model_selection import train_test_split
+import numpy as np
+
 
 from sklearn.preprocessing import OneHotEncoder
 
@@ -21,18 +23,11 @@ print("Transforming data")
 # Categorize columns: "protocol", "service", "flag", "attack_type"
 # Note: is_host_login and is_guest_login are symbolic as well, but they take only two values (like binary)
 raw_data[1], protocols = pd.factorize(raw_data[1])
+print(protocols)
 raw_data[2], services = pd.factorize(raw_data[2])
 raw_data[3], flags = pd.factorize(raw_data[3])
 
-# gather all attack types in 5 different class depending on the type of attack. The classes are: normal, dos, probe, r2l, u2r
-# normal: normal
-# dos: back, land, neptune, pod, smurf, teardrop, apache2, udpstorm, processtable, worm
-# probe: ipsweep, nmap, portsweep, satan, mscan, saint
-# r2l: guess_passwd, ftp_write, imap, phf, multihop, warezmaster, warezclient, spy, xlock, xsnoop, snmpguess, snmpgetattack, httptunnel, sendmail, named
-# u2r: buffer_overflow, loadmodule, rootkit, perl, sqlattack, xterm, ps, httptunnel
-
-raw_data[41] = raw_data[41].str.rstrip('.')
-raw_data[41] = raw_data[41].replace(
+raw_data[41] = raw_data[41].str.rstrip('.').replace(
     {
         'back': 'dos',
         'buffer_overflow': 'u2r',
@@ -59,12 +54,21 @@ raw_data[41] = raw_data[41].replace(
     }
 )
 
-import numpy as np
-
 unique_values = np.unique(raw_data[41])
 print("Possible attacks:", unique_values)
 
+# Calcola le occorrenze di ciascun valore unico nella colonna 41 (etichette degli attacchi)
+attack_counts = raw_data[41].value_counts()
+
+total_attacks = len(raw_data[41])
+
+print("Counts and percentages of each attack type:")
+for attack, count in attack_counts.items():
+    percentage = (count / total_attacks) * 100
+    print(f"{attack}: {count} ({percentage:.2f}%)")
+
 raw_data[41], attacks = pd.factorize(raw_data[41])
+print(attacks)
 
 # separate features (columns 1..40) and label (last column, the 41st)
 X = raw_data.iloc[:, :raw_data.shape[1] - 1]  # Features
@@ -85,10 +89,10 @@ print("X_test, y_test:", X_test.shape, y_test.size)
 
 # Training, choose model by commenting/uncommenting clf=
 print("Training model")
-# clf= RandomForestClassifier(n_jobs=-1, random_state=3, n_estimators=102)#, max_features=0.8, min_samples_leaf=3, n_estimators=500, min_samples_split=3, random_state=10, verbose=1)
-clf = DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
-                             min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
-                             min_impurity_decrease=0.0, class_weight=None)
+clf= RandomForestClassifier(n_jobs=-1, random_state=3, n_estimators=102)#, max_features=0.8, min_samples_leaf=3, n_estimators=500, min_samples_split=3, random_state=10, verbose=1)
+#clf = DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
+ #                            min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
+  #                           min_impurity_decrease=0.0, class_weight=None)
 
 trained_model = clf.fit(X_train, y_train)
 
