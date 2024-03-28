@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import numpy
 import math
@@ -5,6 +6,7 @@ from tabulate import tabulate
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import Perceptron
 from sklearn.metrics import confusion_matrix, zero_one_loss
 
 print("Loading data")
@@ -36,9 +38,9 @@ attacks_categories = {
     'loadmodule.': 'u2r',
     'ipsweep.': 'probe',
     'nmap.': 'probe',
-    'sqlattack.': 'u2r',  #
+    'sqlattack.': 'r2l',  #
     'warezclient.': 'r2l',
-    'snmpguess.': 'u2r',  #
+    'snmpguess.': 'r2l',  #
     'satan.': 'probe',
     'portsweep.': 'probe',
     'xlock.': 'r2l',  #
@@ -55,7 +57,7 @@ attacks_categories = {
     'rootkit.': 'u2r',
     'guess_passwd.': 'r2l',
     'phf.': 'r2l',
-    'spy.': 'r2l',
+    'spy.': 'u2r',
     'ps.': 'u2r',  #
     'xterm.': 'u2r',  #
     'httptunnel.': 'u2r'  #
@@ -78,13 +80,17 @@ print("Transforming data (preprocessing)")
 traindata[1], train_protocols = pd.factorize(traindata[1])
 traindata[2], train_services = pd.factorize(traindata[2])
 traindata[3], train_flags = pd.factorize(traindata[3])
-traindata[41], train_attacks = pd.factorize(traindata[41])
+# traindata[41], train_attacks = pd.factorize(traindata[41])
+order = {'normal': 0, 'dos': 1, 'r2l': 2, 'u2r': 3, 'probe': 4}
+traindata[41] = traindata[41].map(order)
+train_attacks = np.array(list(order.keys()))
 
 testdata[1], test_protocols = pd.factorize(testdata[1])
 testdata[2], test_services = pd.factorize(testdata[2])
 testdata[3], test_flags = pd.factorize(testdata[3])
-testdata[41], test_attacks = pd.factorize(testdata[41])
-
+#testdata[41], test_attacks = pd.factorize(testdata[41])
+testdata[41] = testdata[41].map(order)
+test_attacks = np.array(list(order.keys()))
 
 # Splitting the data into features and labels
 X_train = traindata.iloc[:, :traindata.shape[1] - 1]  # Features of train set
@@ -107,8 +113,8 @@ for label in y_test:
         normal_count += 1
     else:
         attack_count += 1
-print("Normal labels in test set: ", normal_count)
-print("Attack labels in test set: ", attack_count)
+print("Normal labels in test set:            ", normal_count)
+print("Attack labels in test set (abnormal): ", attack_count)
 
 # Print shapes
 print("Shapes Info")
@@ -123,9 +129,15 @@ print("\n")
 print("Training model")
 
 #clf = RandomForestClassifier(max_depth=10)
-clf = DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
-                             min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
-                             min_impurity_decrease=0.0, class_weight=None)
+#clf = DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1,
+ #                            min_weight_fraction_leaf=0.0, max_features=None, random_state=None, max_leaf_nodes=None,
+  #                           min_impurity_decrease=0.0, class_weight=None)
+
+clf = DecisionTreeClassifier()
+# clf = Perceptron()
+
+clf_name = type(clf).__name__
+print("Using", clf_name)
 
 trained_model = clf.fit(X_train, y_train)
 
@@ -147,11 +159,19 @@ print(t)
 
 # Confusion Matrix (printing using tabulate)
 results = confusion_matrix(y_test, y_pred)
-error = zero_one_loss(y_test, y_pred)
-print("Confusion matrix:")
-print(tabulate(results, tablefmt="fancy_grid"))
-print("Error: ", error)
-print("\n")
+# Definisci le etichette di classe
+class_labels = ["Normal", "DOS", "R2L", "U2R", "Probing"]
 
-# print the first cell of the confusion matrix
-print(results[0][0]*100/normal_count)
+# Aggiungi le etichette alla matrice di confusione
+results_labeled = []
+for i in range(len(results)):
+    row_sum = np.sum(results[i])  # Somma della riga
+    row_label = f"{class_labels[i]} ({row_sum})"
+    row_percentages = [f'{value} ({value / row_sum:.2%})' if row_sum > 0 else f'{value}' for value in results[i]]
+    row = [row_label] + row_percentages
+    results_labeled.append(row)
+
+# Stampa la matrice di confusione con etichette
+print("Confusion matrix:")
+print(tabulate(results_labeled, headers=[""] + class_labels, tablefmt="fancy_grid"))
+
