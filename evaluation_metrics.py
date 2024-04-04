@@ -1,24 +1,15 @@
-import numpy as np
-from sklearn.metrics import confusion_matrix
-from tabulate import tabulate
-import data_info
-
-import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix  # for confusion matrix
+from sklearn.preprocessing import LabelEncoder  # for inverse transforming class labels
+from tabulate import tabulate  # for tabulate form of confusion matrix
+import matplotlib.pyplot as plt  # for heatmap visualization of confusion matrix
 import seaborn as sns  # for heatmap visualization of confusion matrix
+import numpy as np  # for numpy arrays (e.g. confusion matrix diagonal, row sum, etc.)
 
-from sklearn.preprocessing import LabelEncoder
-
-
-def calculate_pcc(y_test, y_pred):
-    results = confusion_matrix(y_test, y_pred)
-    correct_predictions = np.diag(results).sum()
-    total_samples = results.sum()
-    pcc = correct_predictions / total_samples
-    return pcc
+import data_info
 
 
 def print_confusion_matrix(y_test, y_pred):
-    class_labels = ["Normal", "DOS", "R2L", "U2R", "Probing"]
+    class_labels = ["Normal", "DOS", "R2L", "U2R", "Probing"]  # Attack classes
     le = LabelEncoder()
     le.fit(class_labels)
 
@@ -40,7 +31,9 @@ def print_confusion_matrix(y_test, y_pred):
         results_labeled.append(row)  # Append row to results_labeled
 
     print("Confusion matrix:")
-    print(tabulate(results_labeled, headers=[""] + class_labels, tablefmt="fancy_grid"))
+    print(tabulate(results_labeled, headers=[""] + class_labels, tablefmt="fancy_grid"))  # print as tabulate grid
+    print(tabulate(results_labeled, headers=[""] + class_labels, tablefmt="latex"))  # print as tabulate grid
+    # use tablefmt="latex" to print it as latex table
 
     # Create matplotlib heatmap of normalized confusion matrix
     cm_normalized = results.astype('float') / results.sum(axis=1)[:, np.newaxis]  # Normalize (each row sums to 1)
@@ -54,11 +47,26 @@ def print_confusion_matrix(y_test, y_pred):
 
 
 def print_score(training_score, testing_score):
+
+    training_score = f"{training_score:.2f}%"  # Add percentage sign and round to 2 decimal places
+    testing_score = f"{testing_score:.2f}%"    # Same as above
+
     h = ["TRAINING SET", "TEST SET"]
     d = [[training_score, testing_score]]
     t = tabulate(d, headers=h, tablefmt="fancy_grid", numalign="center")
+    # use tablefmt="latex" to print it as latex table
+
     print(t)
+    # print(tabulate(d, headers=h, tablefmt="latex", numalign="center"))
 
 
 def print_pcc(pcc):
     print("Percent of Correct Classification (PCC): {:.2%}".format(pcc))  # Print PCC
+
+
+def calculate_pcc(y_test, y_pred):  # Calculate PCC (Percent of Correct Classification)
+    results = confusion_matrix(y_test, y_pred)
+    correct_predictions = np.diag(results).sum()
+    total_samples = results.sum()
+    pcc = correct_predictions / total_samples
+    return pcc

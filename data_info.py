@@ -1,4 +1,5 @@
-def map_classes():
+# maps the attack types to the five classes (normal, dos, probe, r2l, u2r) in the KDD99 dataset.
+def map_five_classes():
     return {
         'imap.': 'r2l',
         'named.': 'r2l',
@@ -42,7 +43,7 @@ def map_classes():
         'httptunnel.': 'u2r'
     }
 
-
+# Returns the 42 column names of the KDD99 dataset (including target label).
 def get_column_names():
     columns = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes', 'dst_bytes', 'land', 'wrong_fragment',
                'urgent', 'hot', 'num_failed_logins', 'logged_in', 'num_compromised', 'root_shell', 'su_attempted',
@@ -53,3 +54,14 @@ def get_column_names():
                'dst_host_same_src_port_rate', 'dst_host_srv_diff_host_rate', 'dst_host_serror_rate',
                'dst_host_srv_serror_rate', 'dst_host_rerror_rate', 'dst_host_srv_rerror_rate', 'attack_type']
     return columns
+
+
+def get_attack_types():
+    return ['imap.', 'named.', 'land.', 'processtable.', 'back.', 'pod.', 'neptune.', 'buffer_overflow.', 'teardrop.',
+            'apache2.', 'xsnoop.', 'saint.', 'ftp_write.', 'multihop.', 'loadmodule.', 'ipsweep.', 'nmap.', 'sqlattack.',
+            'warezclient.', 'snmpguess.', 'satan.', 'portsweep.', 'xlock.', 'mailbomb.', 'udpstorm.', 'worm.', 'perl.',
+            'snmpgetattack.', 'normal.', 'smurf.', 'mscan.', 'warezmaster.', 'sendmail.', 'rootkit.', 'guess_passwd.', 'phf.',
+            'spy.', 'ps.', 'xterm.', 'httptunnel.']
+
+def get_five_classes_attack_types():
+    return ['normal.', 'dos.', 'probe.', 'r2l.', 'u2r.']

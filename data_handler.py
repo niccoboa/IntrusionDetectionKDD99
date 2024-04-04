@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
-from data_info import get_column_names
+
+import data_info
+from data_info import get_column_names, get_attack_types
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 
@@ -13,6 +15,7 @@ def load(data):
 
 def gathering(data, label, attack_classes):
     data[label] = data[label].replace(attack_classes)
+    return data
 
 
 def preprocess(data):
