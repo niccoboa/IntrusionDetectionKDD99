@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 
-import data_info
-from data_info import get_column_names, get_attack_types
+from data_info import get_column_names
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 
@@ -19,7 +18,7 @@ def gathering(data, label, attack_classes):
 
 
 def preprocess(data):
-    scaler = MinMaxScaler()
+    scaler = MinMaxScaler()  # scaler for numeric columns
     le = LabelEncoder()  # label encoder for symbolic columns
 
     # SCALE NUMERIC COLUMNS

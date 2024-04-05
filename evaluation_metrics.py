@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt  # for heatmap visualization of confusion matrix
 import seaborn as sns  # for heatmap visualization of confusion matrix
 import numpy as np  # for numpy arrays (e.g. confusion matrix diagonal, row sum, etc.)
 
-import data_info
-
 
 def print_confusion_matrix(y_test, y_pred):
     class_labels = ["Normal", "DOS", "R2L", "U2R", "Probing"]  # Attack classes
@@ -32,7 +30,6 @@ def print_confusion_matrix(y_test, y_pred):
 
     print("Confusion matrix:")
     print(tabulate(results_labeled, headers=[""] + class_labels, tablefmt="fancy_grid"))  # print as tabulate grid
-    print(tabulate(results_labeled, headers=[""] + class_labels, tablefmt="latex"))  # print as tabulate grid
     # use tablefmt="latex" to print it as latex table
 
     # Create matplotlib heatmap of normalized confusion matrix
@@ -48,8 +45,8 @@ def print_confusion_matrix(y_test, y_pred):
 
 def print_score(training_score, testing_score):
 
-    training_score = f"{training_score:.2f}%"  # Add percentage sign and round to 2 decimal places
-    testing_score = f"{testing_score:.2f}%"    # Same as above
+    training_score = f"{training_score:.4f}%"  # Add percentage sign and round to 2 decimal places
+    testing_score = f"{testing_score:.4f}%"    # Same as above
 
     h = ["TRAINING SET", "TEST SET"]
     d = [[training_score, testing_score]]
@@ -57,7 +54,6 @@ def print_score(training_score, testing_score):
     # use tablefmt="latex" to print it as latex table
 
     print(t)
-    # print(tabulate(d, headers=h, tablefmt="latex", numalign="center"))
 
 
 def print_pcc(pcc):

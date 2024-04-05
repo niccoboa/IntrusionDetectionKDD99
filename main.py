@@ -1,12 +1,13 @@
+import time  # for measuring time execution
 # Import custom modules
 import data_info   # datasets information such as attacks classes or column names
 import data_handler  # data loading, gathering and preprocessing (manipulation)
 import evaluation_metrics  # evaluation metrics such as PCC, confusion matrix or score
 import model_trainer  # model training (using classification algorithms e.g. Random Forest & Perceptron)
-import time  # for measuring time execution
 
 
 print("Loading data...")  #
+# see: https://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html
 traindata = data_handler.load("data10")  # Load training set and assign column names
 testdata = data_handler.load("test10")   # Load testing  set and assign column names
 
