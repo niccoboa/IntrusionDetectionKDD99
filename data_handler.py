@@ -18,8 +18,8 @@ def gathering(data, label, attack_classes):
 
 
 def preprocess(data):
-    scaler = MinMaxScaler()  # scaler for numeric columns
-    le = LabelEncoder()  # label encoder for symbolic columns
+    scaler = MinMaxScaler()  # scaler for numeric columns: scales each feature to a given range (default: [0, 1])
+    le = LabelEncoder()  # label encoder for symbolic columns: encodes categorical into numerical (0, 1, 2, ...) values
 
     # SCALE NUMERIC COLUMNS
     numeric_columns = data.select_dtypes(include=np.number).columns.tolist()[:-1]  # numeric columns (& exclude target)
