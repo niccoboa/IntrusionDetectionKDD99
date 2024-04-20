@@ -8,8 +8,9 @@ In questo progetto si descrive l’utilizzo di implementazioni disponibili di Pe
 
 Per saperne di più: leggi il pdf presente nella repo.
 
+---
 
-References:
+### References:
 [1] F. Pedregosa and Varoquaux et al. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12:2825–2830, 2011.
 [2] Amor et al. Naive bayes vs decision trees in intrusion detection systems. Proceedings of the ACM Symposium on Applied Computing, 2004.
 [3] Irvine University of California. Kdd cup dataset. 1999. See: https://kdd.ics.uci.edu/databases/kddcup99/kddcup99.html
